@@ -22,3 +22,4 @@ String godina = "$day/$month/$year"
 Date date1 = simpleDateFormat.parse(godina);
 def dat = simpleDateFormat.format(date1)
 datumljIstekaField.setFormValue(dat)
+// Test commit
