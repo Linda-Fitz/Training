@@ -1,0 +1,76 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.link.IssueLink
+import com.atlassian.jira.web.bean.PagerFilter
+import com.atlassian.jira.issue.util.DefaultIssueChangeHolder
+import com.atlassian.jira.issue.index.IssueIndexingService
+import com.atlassian.jira.bc.issue.search.SearchService
+import java.text.DecimalFormatSymbols
+import com.atlassian.jira.issue.Issue
+import java.text.DecimalFormat
+
+import org.apache.log4j.Logger
+import org.apache.log4j.Level
+
+def log = Logger.getLogger("com.acme.WebPanel")
+log.setLevel(Level.DEBUG)
+
+def cfManager = ComponentAccessor.getCustomFieldManager()
+def issueManager = ComponentAccessor.getIssueManager()
+//Issue issue = ComponentAccessor.getIssueManager().getIssueByKeyIgnoreCase("CRM-10")
+def issue = context.issue as Issue
+//def issuetype = issue.getIssueType()
+
+def issueIndexingService = ComponentAccessor.getComponent(IssueIndexingService)
+def searchService = ComponentAccessor.getComponent(SearchService.class)
+def visol = ComponentAccessor.getUserManager().getUserByKey("visol")
+def customerField = cfManager.getCustomFieldObject(10246)
+def openAmountField = cfManager.getCustomFieldObject(10963)
+def customerValue = issue.getCustomFieldValue(customerField)
+
+double totalOpen = 0.000000000000000000d
+  def SearchService.ParseResult parseResultI =  searchService.parseQuery(visol,"issuetype = \"Invoice\" AND CF[10963] > 0 and cf[10246] = \"${customerValue}\"")
+	if (!parseResultI.isValid()) { return }
+	def searchResultI = searchService.search(visol, parseResultI.getQuery(), PagerFilter.getUnlimitedFilter())
+	def issuesAll = searchResultI.getResults()
+
+issuesAll.each{invoice->
+   totalOpen += invoice.getCustomFieldValue(openAmountField)
+ }
+
+ def styleStringo ="""<style>
+ .peopledetails {
+   font-family: 'Charlie Text'; font-weight: normal; font-size: 16px; line-height: 24px; color: #091E42; margin-bottom: 24px;
+ }
+ span {
+   float: left;
+   width: 50%;
+ }
+
+ .people-details>dl:first-child {
+     line-height: 24px;
+ }
+
+ .issue-body-content .item-details dl {
+     margin-top: 1px;
+ }
+ .item-details dl {
+     border-spacing: 0;
+     display: table;
+     table-layout: fixed;
+     margin: 0;
+     width: 100%;
+ }
+ </style>"""
+/*def totalOpenString ="""<div class = "est"><span style="color: #42526e; font-size: 35px; font-weight: regular;"> Total Open: </span></div>"""
+def totalOpenValueString = """<div class = "est"><span style="color: #4AD991; font-size: 35px; font-weight: bold;">${totalOpen} &#8364</span></div>"""
+def outputString = totalOpenString + totalOpenValueString
+writer.write(outputString)*/
+def line= """<hr align="left" width="65%">"""
+def totalOpenString =""" <div class="item-details people-details" id="peopledetails">
+<dl>
+    <dt><span class="column" style="color: #a6adba;font-weight: regular;">Amount of open invoices:</span></dt>
+    <dd><span class="column" style="color: #4AD991;font-size: 20px;font-weight: bold;">${totalOpen} &#8364</span></dd>
+</dl>
+</div>"""
+def outputString=line+totalOpenString
+ writer.write(outputString)
