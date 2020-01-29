@@ -34,11 +34,18 @@ def cfManager = ComponentAccessor.getCustomFieldManager()
 def currentUser = ComponentAccessor.getJiraAuthenticationContext().getUser()
 attachmentManager = ComponentAccessor.getAttachmentManager()
 def changeHolder = new DefaultIssueChangeHolder()
-//Issue issue = issueManager.getIssueByKeyIgnoreCase("CE-51")
+def  userPropertyManager = ComponentAccessor.getUserPropertyManager()
+def visol = ComponentAccessor.getUserManager().getUserByName("VISOL");
+//Issue issue = issueManager.getIssueByKeyIgnoreCase("CE-134")
 mailIssue = issue
 
 def ispitField = cfManager.getCustomFieldObject("customfield_11265")
 def emailField = cfManager.getCustomFieldObject("customfield_10222")
+ nameValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.NAME')
+ telValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.TEL')
+ websiteValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.WEBSITE')
+ emailValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.EMAIL')
+ adressValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.ADR')
 
 Date now = new Date(System.currentTimeMillis())
 nowFormatted = new SimpleDateFormat("dd.MM.yyyy").format(now).toString()
@@ -73,6 +80,11 @@ def bindTemplate(Issue issue) {
     def binding = [
         issuekey: issue.getKey(),
         datum: nowFormatted,
+		name: nameValue,
+		telephone: telValue,
+		website: websiteValue,
+		email: emailValue,
+		adress: adressValue
     ]
 
     return template.make(binding)   

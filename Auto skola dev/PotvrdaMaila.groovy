@@ -30,11 +30,20 @@ log.setLevel(Level.DEBUG)
 def issueManager = ComponentAccessor.getIssueManager()
 def cfManager = ComponentAccessor.getCustomFieldManager()
 def currentUser = ComponentAccessor.getJiraAuthenticationContext().getUser()
+def  userPropertyManager = ComponentAccessor.getUserPropertyManager()
+def visol = ComponentAccessor.getUserManager().getUserByName("VISOL");
 
-//Issue issue = issueManager.getIssueByKeyIgnoreCase("KAN-379")
+//Issue issue = issueManager.getIssueByKeyIgnoreCase("KAN-3667")
+
 def emailField = cfManager.getCustomFieldObject("customfield_10222")
 def emailConfirmedField = cfManager.getCustomFieldObject("customfield_11001")
 def fieldConfig = emailConfirmedField.getRelevantConfig(issue)
+nameValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.NAME')
+telValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.TEL')
+websiteValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.WEBSITE')
+emailValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.EMAIL')
+adressValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.ADR')
+
 def da = ComponentAccessor.optionsManager.getOptions(fieldConfig)?.find {it.toString() == 'Da'}
 
 // Static
@@ -61,6 +70,10 @@ def bindTemplate(Issue issue) {
     issuekey: issue.getKey(),
     summary: summary,
     datum: nowFormatted,
+    name: nameValue,
+	  telephone: telValue,
+	  website: websiteValue,
+	  email: emailValue
   ]
 
   return template.make(binding) 

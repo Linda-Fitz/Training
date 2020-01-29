@@ -30,6 +30,8 @@ log.setLevel(Level.DEBUG)
 def issueManager = ComponentAccessor.getIssueManager()
 def cfManager = ComponentAccessor.getCustomFieldManager()
 def currentUser = ComponentAccessor.getJiraAuthenticationContext().getUser()
+def  userPropertyManager = ComponentAccessor.getUserPropertyManager()
+def visol = ComponentAccessor.getUserManager().getUserByName("VISOL");
 
 //Issue issue = issueManager.getIssueByKeyIgnoreCase("KAN-3923")
 
@@ -39,6 +41,11 @@ def datumVrijeme = issue.getCustomFieldValue(datumVrijemeField)
 
 def obavjestenjeField = cfManager.getCustomFieldObject("customfield_10610")
 def obavjestenje = issue.getCustomFieldValue(obavjestenjeField)
+nameValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.NAME')
+telValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.TEL')
+websiteValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.WEBSITE')
+emailValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.EMAIL')
+adressValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.ADR')
 
 Boolean aktivni
 Boolean otvoreni
@@ -99,7 +106,11 @@ def bindTemplate(Issue issue) {
 		datum: nowFormatted,
 		datumObuke: datumObuke,
 		vrijemeObuke: vrijemeObuke,
-		adresaObuke: adresaObuke
+		adresaObuke: adresaObuke,
+		name: nameValue,
+		telephone: telValue,
+		website: websiteValue,
+		email: emailValue
 	]
 
 	return template.make(binding)	

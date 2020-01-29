@@ -18,31 +18,35 @@ import com.atlassian.jira.user.UserPropertyManager
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
 
-log = Logger.getLogger("com.acme.LinkovanjeVozilaZaCjenovnike")
+log = Logger.getLogger("com.acme.SetValueFromProperty")
 log.setLevel(Level.DEBUG)
 
-issueManager = ComponentAccessor.getIssueManager()
-cfManager = ComponentAccessor.getCustomFieldManager()
-currentUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
-linkMgr = ComponentAccessor.getIssueLinkManager()
+def issueManager = ComponentAccessor.getIssueManager()
+def cfManager = ComponentAccessor.getCustomFieldManager()
+def currentUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+def linkMgr = ComponentAccessor.getIssueLinkManager()
 def visol = ComponentAccessor.getUserManager().getUserByKey("visol")
 
-Issue issue = issueManager.getIssueByKeyIgnoreCase("ce-173")
+//Issue issue = issueManager.getIssueByKeyIgnoreCase("ce-173")
 def  userPropertyManager = ComponentAccessor.getUserPropertyManager()
-propValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.TEL')
-propValue1 = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.TIS')
+
+def nameValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.NAME')
+def telValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.TEL')
+def websiteValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.WEBSITE')
+def emailValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.EMAIL')
+def adressValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.ADR')
+
+String fileContents = new File('C:/Program Files/Atlassian/Application Data/JIRA/scripts/Template/ObavjestenjeODospjecuRate.html').text
+template = new groovy.text.StreamingTemplateEngine().createTemplate(fileContents)
+def template = bindTemplate(dospjelaRata)
 
 def bindTemplate(Issue issue) {
 	def binding = [
-		issueid: issue.getId().toString(),
-		projectname: issue.getProjectObject().getName(),
-		issuekey: issue.getKey(),
-		summary: summary,
-		description: description,
-		datum: nowFormatted,
-		datumObuke: datumObuke,
-		vrijemeObuke: vrijemeObuke,
-		adresaObuke: adresaObuke
+		name:nameValue,
+		telephone: telValue,
+		website: websiteValue,
+		email: emailValue,
+		adress: adressValue
 	]
 
 	return template.make(binding)	

@@ -31,14 +31,21 @@ def issueManager = ComponentAccessor.getIssueManager()
 def cfManager = ComponentAccessor.getCustomFieldManager()
 def linkMgr = ComponentAccessor.getIssueLinkManager()
 def currentUser = ComponentAccessor.getJiraAuthenticationContext().getUser()
+def  userPropertyManager = ComponentAccessor.getUserPropertyManager()
+def visol = ComponentAccessor.getUserManager().getUserByName("VISOL");
 
-//Issue issue = issueManager.getIssueByKeyIgnoreCase("KAN-3829")
+//Issue issue = issueManager.getIssueByKeyIgnoreCase("KAN-3661")
 
 def ispitField = cfManager.getCustomFieldObject("customfield_10814")
 def emailField = cfManager.getCustomFieldObject("customfield_10222")
 def adresaField = cfManager.getCustomFieldObject("customfield_10120")
 def datumVrijemeField = cfManager.getCustomFieldObject("customfield_10624")
 def datumVrijeme = issue.getCustomFieldValue(datumVrijemeField)
+nameValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.NAME')
+telValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.TEL')
+websiteValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.WEBSITE')
+emailValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.EMAIL')
+adressValue = userPropertyManager.getPropertySet(visol)?.getString('jira.meta.ADR')
 
 // Static
 summary = issue.summary
@@ -84,7 +91,12 @@ def bindTemplate(Issue issue) {
 		datum: nowFormatted,
 		datumIspita: datumIspita,
 		adresaIspita: adresaIspita,
-		vrijemeIspita: vrijemeIspita
+		vrijemeIspita: vrijemeIspita,
+		name: nameValue,
+		telephone: telValue,
+		website: websiteValue,
+		email: emailValue,
+		adress: adressValue
 	]
 
 	return template.make(binding)	
